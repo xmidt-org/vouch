@@ -4,6 +4,7 @@
 package oauth
 
 import (
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -80,10 +81,10 @@ func TestOAuthEndToEnd(t *testing.T) {
 			},
 			mockServer: func() string {
 				// Start a mock server to simulate token endpoint
-				server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 					w.Header().Set("Content-Type", "application/json")
 					w.WriteHeader(http.StatusOK)
-					w.Write([]byte(`{"access_token": "mock-token", "expires_in": 3600}`))
+					_, _ = w.Write([]byte(`{"access_token": "mock-token", "expires_in": 3600}`))
 				}))
 				return server.URL
 			},
@@ -98,9 +99,9 @@ func TestOAuthEndToEnd(t *testing.T) {
 			},
 			mockServer: func() string {
 				// Start a mock server to simulate token endpoint
-				server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 					w.WriteHeader(http.StatusBadRequest)
-					w.Write([]byte(`{"error": "invalid_request"}`))
+					_, _ = w.Write([]byte(`{"error": "invalid_request"}`))
 				}))
 				return server.URL
 			},
@@ -125,7 +126,7 @@ func TestOAuthEndToEnd(t *testing.T) {
 			got, err := New(tc.config, func(any) {})
 			require.NoError(t, err)
 
-			req, err := http.NewRequest("GET", "https://example.com/resource", nil)
+			req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, "https://example.com/resource", nil)
 			require.NoError(t, err)
 
 			err = got.Decorate(req)

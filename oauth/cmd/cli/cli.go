@@ -4,6 +4,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"os"
@@ -33,7 +34,7 @@ func main() {
 		panic(err)
 	}
 
-	req, err := http.NewRequest("GET", "https://example.com", nil)
+	req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, "https://example.com", nil)
 	if err != nil {
 		panic(err)
 	}

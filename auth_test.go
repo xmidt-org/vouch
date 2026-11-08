@@ -4,6 +4,7 @@
 package vouch
 
 import (
+	"context"
 	"errors"
 	"net/http"
 	"testing"
@@ -82,7 +83,7 @@ func TestVouch_Decorate(t *testing.T) {
 			description: "Single successful decorator",
 			decorators: []decorator{
 				mockDecorator{
-					decorateFunc: func(req *http.Request) error {
+					decorateFunc: func(_ *http.Request) error {
 						return nil
 					},
 				},
@@ -93,7 +94,7 @@ func TestVouch_Decorate(t *testing.T) {
 			description: "All decorators fail",
 			decorators: []decorator{
 				mockDecorator{
-					decorateFunc: func(req *http.Request) error {
+					decorateFunc: func(_ *http.Request) error {
 						return errors.New("failed")
 					},
 				},
@@ -108,7 +109,7 @@ func TestVouch_Decorate(t *testing.T) {
 				decorators: tc.decorators,
 			}
 
-			req, _ := http.NewRequest("GET", "https://example.com", nil)
+			req, _ := http.NewRequestWithContext(context.Background(), http.MethodGet, "https://example.com", nil)
 			err := v.Decorate(req)
 			if tc.expectError {
 				if err == nil {
@@ -125,7 +126,7 @@ func TestVouch_Decorate(t *testing.T) {
 
 func TestVouch_AddFetchEventListener(t *testing.T) {
 	listenerCalled := false
-	listener := events.FetchEventListenerFunc(func(event events.FetchEvent) {
+	listener := events.FetchEventListenerFunc(func(_ events.FetchEvent) {
 		listenerCalled = true
 	})
 
@@ -152,7 +153,7 @@ func TestVouch_AddFetchEventListener(t *testing.T) {
 
 func TestVouch_AddDecorateEventListener(t *testing.T) {
 	listenerCalled := false
-	listener := events.DecorateEventListenerFunc(func(event events.DecorateEvent) {
+	listener := events.DecorateEventListenerFunc(func(_ events.DecorateEvent) {
 		listenerCalled = true
 	})
 

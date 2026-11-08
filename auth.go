@@ -56,17 +56,10 @@ type Option interface {
 func New(cfg Config, opts ...Option) (*Vouch, error) {
 	var auth Vouch
 
-	defaults := []Option{
-		handleBasic(cfg.Basic),
-		handleOAuth(cfg.OAuth),
-	}
-
-	finalize := []Option{
-		setupDecorators(),
-	}
-
-	all := append(defaults, opts...)
-	all = append(all, finalize...)
+	all := make([]Option, 0, len(opts)+3)
+	all = append(all, handleBasic(cfg.Basic), handleOAuth(cfg.OAuth))
+	all = append(all, opts...)
+	all = append(all, setupDecorators())
 
 	for _, opt := range all {
 		if err := opt.apply(&auth); err != nil {

@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	BASIC_TYPE = "basic"
+	BASIC_TYPE = "basic" //nolint:revive // exported name retained for API compatibility
 )
 
 type Config struct {

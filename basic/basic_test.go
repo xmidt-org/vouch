@@ -4,6 +4,7 @@
 package basic
 
 import (
+	"context"
 	"net/http"
 	"testing"
 
@@ -58,8 +59,7 @@ func TestNew(t *testing.T) {
 			cfg := tc.config
 
 			fn := func(evnt any) {
-				switch e := evnt.(type) {
-				case events.DecorateEvent:
+				if e, ok := evnt.(events.DecorateEvent); ok {
 					assert.NotZero(e.At)
 					assert.Equal(BASIC_TYPE, e.Type)
 					assert.NoError(e.Err)
@@ -83,11 +83,11 @@ func TestNew(t *testing.T) {
 			assert.Equal(want.username, got.username)
 			assert.Equal(want.password, got.password)
 
-			req, err := http.NewRequest("GET", "http://example.com", nil)
+			req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, "http://example.com", nil)
 			require.NoError(err)
 
 			err = got.Decorate(req)
-			assert.NoError(err)
+			require.NoError(err)
 
 			assert.Equal(tc.header, req.Header.Get("Authorization"))
 

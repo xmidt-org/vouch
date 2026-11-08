@@ -5,6 +5,7 @@ package oauth
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -17,7 +18,7 @@ import (
 )
 
 const (
-	OAUTH2_TYPE = "oauth2"
+	OAUTH2_TYPE = "oauth2" //nolint:revive // exported name retained for API compatibility
 )
 
 type Config struct {
@@ -83,7 +84,7 @@ func New(config Config, dispatch func(any)) (*OAuth, error) {
 	}
 
 	if config.ExpirationSafetyMargin < 0 || config.ExpirationSafetyMargin > 1 {
-		return nil, fmt.Errorf("ExpirationSafetyMargin must be between 0 and 1")
+		return nil, errors.New("ExpirationSafetyMargin must be between 0 and 1")
 	}
 
 	priority := config.Priority
