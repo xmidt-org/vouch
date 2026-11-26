@@ -4,7 +4,7 @@ go 1.26.0
 
 require (
 	github.com/stretchr/testify v1.12.1
-	github.com/xmidt-org/eventor v1.0.51
+	github.com/xmidt-org/eventor v1.0.52
 	golang.org/x/oauth2 v0.38.0
 )
 
